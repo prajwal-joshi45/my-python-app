@@ -1,9 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
 name: Build and deploy Python app to Azure Web App - prajwal-python-test
-
 on:
   push:
     branches:
@@ -14,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # This is required for actions/checkout
+      contents: read
     
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +17,12 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.9'
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libopenblas-dev liblapack-dev libx11-dev libgtk-3-dev
       
       - name: Create and start virtual environment
         run: |
@@ -33,11 +33,9 @@ jobs:
       - name: Install dependencies
         run: |
           source venv/bin/activate
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install -r requirements.txt
         
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
-      
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r --exclude=venv/\*
       
@@ -54,8 +52,8 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # This is required for requesting the JWT
-      contents: read # This is required for actions/checkout
+      id-token: write
+      contents: read
     
     steps:
       - name: Download artifact from build job
@@ -69,13 +67,13 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B6807A54E9974D4B9A473B5E82D45F22 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3F98933562F646338C75F2F94C60F0A5 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7C049D8CF0264A49B38FF179F34A83FA }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8EF59EA70AA94E74ADC51CE1C6546510 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A15D4D9615724C7EB487B20B84D49087 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_85BD05D8FEF241A69A35A52135D1199F }}
       
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'prajwal-python-test'
+          app-name: 'attendgrow'
           slot-name: 'Production'
